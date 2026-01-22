@@ -29,16 +29,16 @@ class GalloResource extends JsonResource
             'tipo_cresta' => $this->tipo_cresta,
             'id_padre' => $this->id_padre,
             'id_madre' => $this->id_madre,
-            'id_gallera' => $this->id_gallera,
-            
+            'id_user' => $this->id_user,
+
             // Relaciones opcionales
-            'gallera' => new GalleraResource($this->whenLoaded('gallera')),
+            'user' => new UserResource($this->whenLoaded('user')),
             'padre' => new GalloResource($this->whenLoaded('padre')),
             'madre' => new GalloResource($this->whenLoaded('madre')),
             'vacunas' => VacunaResource::collection($this->whenLoaded('vacunas')),
             'entrenamientos' => EntrenamientoResource::collection($this->whenLoaded('entrenamientos')),
             'peleas' => PeleaResource::collection($this->whenLoaded('peleas')),
-            
+
             // Estadísticas
             'total_vacunas' => $this->whenCounted('vacunas'),
             'total_entrenamientos' => $this->whenCounted('entrenamientos'),

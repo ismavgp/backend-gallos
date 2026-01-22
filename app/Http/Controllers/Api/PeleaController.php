@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PeleaResource;
+use App\Models\Gallo;
 use App\Models\Pelea;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -18,13 +19,9 @@ class PeleaController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            return PeleaResource::collection([]);
-        }
+        $gallos = Gallo::where('id_user', $user->id);
 
-        $gallosIds = $gallera->gallos()->pluck('id');
+        $gallosIds = $gallos->pluck('id');
         $query = Pelea::whereIn('id_gallo', $gallosIds);
 
         // Filtrar por gallo
@@ -75,14 +72,9 @@ class PeleaController extends Controller
         ]);
 
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            abort(403, 'Debes tener una gallera');
-        }
 
         $gallo = Gallo::find($validated['id_gallo']);
-        if ($gallo->id_gallera !== $gallera->id) {
+        if ($gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para registrar peleas de este gallo');
         }
 
@@ -97,11 +89,11 @@ class PeleaController extends Controller
     public function show(Pelea $pelea): PeleaResource
     {
         $user = request()->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $pelea->gallo->id_gallera !== $gallera->id) {
+
+        if (!$pelea || $pelea->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para ver esta pelea');
         }
+
 
         $pelea->load('gallo');
 
@@ -114,11 +106,11 @@ class PeleaController extends Controller
     public function update(Request $request, Pelea $pelea): PeleaResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $pelea->gallo->id_gallera !== $gallera->id) {
+        if (!$pelea || $pelea->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para actualizar esta pelea');
         }
+
+
 
         $validated = $request->validate([
             'id_gallo' => 'sometimes|required|exists:gallos,id',
@@ -129,7 +121,7 @@ class PeleaController extends Controller
 
         if (isset($validated['id_gallo'])) {
             $gallo = Gallo::find($validated['id_gallo']);
-            if ($gallo->id_gallera !== $gallera->id) {
+            if ($gallo->id_user !== $user->id) {
                 abort(403, 'No tienes permiso para asignar este gallo');
             }
         }
@@ -145,11 +137,11 @@ class PeleaController extends Controller
     public function destroy(Pelea $pelea): Response
     {
         $user = request()->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $pelea->gallo->id_gallera !== $gallera->id) {
+        if (!$pelea || $pelea->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para eliminar esta pelea');
         }
+
+
 
         $pelea->delete();
 

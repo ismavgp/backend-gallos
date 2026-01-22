@@ -26,7 +26,7 @@ class Gallo extends Model
         'tipo_cresta',
         'id_padre',
         'id_madre',
-        'id_gallera',
+        'id_user',
     ];
 
     protected $casts = [
@@ -36,11 +36,11 @@ class Gallo extends Model
     ];
 
     /**
-     * Relación con Gallera
+     * Relación con User
      */
-    public function gallera(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Gallera::class, 'id_gallera');
+        return $this->belongsTo(User::class, 'id_user');
     }
 
     /**

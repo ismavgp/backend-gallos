@@ -27,8 +27,9 @@ return new class extends Migration
             $table->foreign('id_padre')->references('id')->on('gallos')->onDelete('set null');
             $table->unsignedBigInteger('id_madre')->nullable();
             $table->foreign('id_madre')->references('id')->on('gallos')->onDelete('set null');
-            $table->unsignedBigInteger('id_gallera')->nullable();
-            $table->foreign('id_gallera')->references('id')->on('galleras')->onDelete('cascade');
+            $table->unsignedBigInteger('id_user')->nullable();
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('set null');
+            $table->timestamps();
         });
     }
 

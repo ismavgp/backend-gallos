@@ -17,14 +17,11 @@ class EntrenamientoResource extends JsonResource
         return [
             'id' => $this->id,
             'id_gallo' => $this->id_gallo,
-            'fecha' => $this->fecha?->toISOString(),
-            'fecha_formateada' => $this->fecha?->format('Y-m-d H:i'),
+            'fecha' => optional($this->fecha)->format('d/m/Y'),
             'duracion_minutos' => $this->duracion_minutos,
             'tipo_entrenamiento' => $this->tipo_entrenamiento,
             'observaciones' => $this->observaciones,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
-            
+
             // Relaciones
             'gallo' => new GalloResource($this->whenLoaded('gallo')),
         ];

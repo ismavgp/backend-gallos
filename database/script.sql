@@ -4,20 +4,15 @@ create table users (
     name varchar(100) not null,
     email varchar(100) not null unique,
     password varchar(255) not null,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp
-);
-
-create table galleras(
-    id serial primary key,
-    id_user int not null unique references users(id) on delete cascade,
-    phone varchar(15) not null,
+        phone varchar(15) not null,
     address varchar(255) not null,
     city varchar(100) not null,
     country varchar(100) not null,
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp
 );
+
+
 
 create table gallos(
     id serial primary key,
@@ -32,8 +27,7 @@ create table gallos(
     color_patas varchar(50) not null,
     tipo_cresta varchar(50) not null,
     id_padre int references gallos(id) null,
-    id_madre int references gallos(id) null,
-    id_gallera int references galleras(id) on delete cascade
+    id_madre int references gallos(id) null
 );
 create table peleas(
     id serial primary key,

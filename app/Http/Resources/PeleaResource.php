@@ -21,8 +21,6 @@ class PeleaResource extends JsonResource
             'fecha_formateada' => $this->fecha?->format('Y-m-d H:i'),
             'lugar' => $this->lugar,
             'estado' => $this->estado,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
             
             // Relaciones
             'gallo' => new GalloResource($this->whenLoaded('gallo')),

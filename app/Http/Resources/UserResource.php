@@ -19,11 +19,8 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at?->toISOString(),
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
             
-            // Relaciones
-            'gallera' => new GalleraResource($this->whenLoaded('gallera')),
+
         ];
     }
 }

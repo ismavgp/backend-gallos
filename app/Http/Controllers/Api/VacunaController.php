@@ -18,34 +18,31 @@ class VacunaController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            return VacunaResource::collection([]);
-        }
 
-        $gallosIds = $gallera->gallos()->pluck('id');
-        $query = Vacuna::whereIn('id_gallo', $gallosIds);
+        $query = Vacuna::whereHas('gallo', function ($q) use ($user) {
+            $q->where('id_user', $user->id);
+        });
 
-        // Filtrar por gallo
+        // Filtro por gallo específico
         if ($request->filled('id_gallo')) {
             $query->where('id_gallo', $request->id_gallo);
         }
 
-        // Filtrar por nombre de vacuna
+        // Filtro por nombre de vacuna
         if ($request->filled('nombre_vacuna')) {
-            $query->where('nombre_vacuna', 'like', "%{$request->nombre_vacuna}%");
+            $query->where('nombre_vacuna', 'like', '%' . $request->nombre_vacuna . '%');
         }
 
-        // Incluir relaciones
+        // Incluir relaciones permitidas
         if ($request->filled('include')) {
-            $includes = explode(',', $request->include);
-            $query->with($includes);
+            $includes = collect(explode(',', $request->include))
+                ->intersect(['gallo']); // whitelist de relaciones
+            $query->with($includes->all());
         }
 
-        $query->orderBy('fecha_aplicacion', 'desc');
-
-        $vacunas = $query->paginate($request->get('per_page', 15));
+        $vacunas = $query
+            ->orderByDesc('fecha_aplicacion')
+            ->paginate($request->integer('per_page', 15));
 
         return VacunaResource::collection($vacunas);
     }
@@ -64,14 +61,10 @@ class VacunaController extends Controller
         ]);
 
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            abort(403, 'Debes tener una gallera');
-        }
+
 
         $gallo = Gallo::find($validated['id_gallo']);
-        if ($gallo->id_gallera !== $gallera->id) {
+        if ($gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para vacunar este gallo');
         }
 
@@ -86,11 +79,13 @@ class VacunaController extends Controller
     public function show(Request $request, Vacuna $vacuna): VacunaResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $vacuna->gallo->id_gallera !== $gallera->id) {
+        if (!$vacuna || $vacuna->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para ver esta vacuna');
         }
+
+        $vacuna->load('gallo');
+
+
 
         if ($request->filled('include')) {
             $includes = explode(',', $request->include);
@@ -106,11 +101,13 @@ class VacunaController extends Controller
     public function update(Request $request, Vacuna $vacuna): VacunaResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $vacuna->gallo->id_gallera !== $gallera->id) {
+
+        if (!$vacuna || $vacuna->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para actualizar esta vacuna');
         }
+
+        $vacuna->load('gallo');
+
 
         $validated = $request->validate([
             'id_gallo' => 'sometimes|required|exists:gallos,id',
@@ -122,7 +119,7 @@ class VacunaController extends Controller
 
         if (isset($validated['id_gallo'])) {
             $gallo = Gallo::find($validated['id_gallo']);
-            if ($gallo->id_gallera !== $gallera->id) {
+            if ($gallo->id_user !== $user->id) {
                 abort(403, 'No tienes permiso para asignar este gallo');
             }
         }
@@ -138,11 +135,11 @@ class VacunaController extends Controller
     public function destroy(Vacuna $vacuna): Response
     {
         $user = request()->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $vacuna->gallo->id_gallera !== $gallera->id) {
+
+        if (!$vacuna || $vacuna->gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para eliminar esta vacuna');
         }
+
 
         $vacuna->delete();
 

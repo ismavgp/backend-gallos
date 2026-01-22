@@ -23,7 +23,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-    ];
+        'phone',
+        'address',
+        'city',
+        'country'    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -48,11 +51,5 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relación 1:1 con Gallera
-     */
-    public function gallera(): HasOne
-    {
-        return $this->hasOne(Gallera::class);
-    }
+
 }

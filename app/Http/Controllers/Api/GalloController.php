@@ -6,25 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\GalloResource;
 use App\Models\Gallo;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
+
 
 class GalloController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request)
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            return GalloResource::collection([]);
-        }
 
-        $query = Gallo::where('id_gallera', $gallera->id);
+
+
+
+        $query = Gallo::where('id_user', $user->id);
 
         // Búsqueda por nombre
         if ($request->filled('search')) {
@@ -63,11 +61,7 @@ class GalloController extends Controller
     public function store(Request $request): GalloResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera) {
-            abort(403, 'Debes tener una gallera para crear gallos');
-        }
+
 
         $validated = $request->validate([
             'placa' => 'required|string|max:20|unique:gallos,placa',
@@ -84,7 +78,7 @@ class GalloController extends Controller
             'id_madre' => 'nullable|exists:gallos,id',
         ]);
 
-        $validated['id_gallera'] = $gallera->id;
+        $validated['id_user'] = $user->id;
         $gallo = Gallo::create($validated);
 
         return new GalloResource($gallo);
@@ -96,18 +90,12 @@ class GalloController extends Controller
     public function show(Request $request, Gallo $gallo): GalloResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $gallo->id_gallera !== $gallera->id) {
+
+        $gallo = Gallo::find($gallo->id);
+
+        if (!$gallo || $gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para ver este gallo');
         }
-
-        // Cargar relaciones dinámicamente
-        if ($request->filled('include')) {
-            $includes = explode(',', $request->include);
-            $gallo->load($includes);
-        }
-
         return new GalloResource($gallo);
     }
 
@@ -117,11 +105,11 @@ class GalloController extends Controller
     public function update(Request $request, Gallo $gallo): GalloResource
     {
         $user = $request->user();
-        $gallera = $user->gallera;
         
-        if (!$gallera || $gallo->id_gallera !== $gallera->id) {
+        if (!$gallo || $gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para actualizar este gallo');
         }
+
 
         $validated = $request->validate([
             'placa' => 'sometimes|required|string|max:20|unique:gallos,placa,' . $gallo->id,
@@ -149,11 +137,13 @@ class GalloController extends Controller
     public function destroy(Gallo $gallo): Response
     {
         $user = request()->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $gallo->id_gallera !== $gallera->id) {
+
+
+
+        if (!$gallo || $gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para eliminar este gallo');
         }
+
 
         $gallo->delete();
 
@@ -166,11 +156,10 @@ class GalloController extends Controller
     public function estadisticas(Gallo $gallo): \Illuminate\Http\JsonResponse
     {
         $user = request()->user();
-        $gallera = $user->gallera;
-        
-        if (!$gallera || $gallo->id_gallera !== $gallera->id) {
-            abort(403, 'No tienes permiso para ver las estadísticas de este gallo');
+        if (!$gallo || $gallo->id_user !== $user->id) {
+            abort(403, 'No tienes permiso para ver estas estadísticas');
         }
+
 
         $gallo->loadCount(['vacunas', 'entrenamientos', 'peleas']);
 

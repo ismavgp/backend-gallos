@@ -29,6 +29,6 @@ class Vacuna extends Model
      */
     public function gallo(): BelongsTo
     {
-        return $this->belongsTo(Gallo::class, 'id_gallo');
+        return $this->belongsTo(Gallo::class, 'id_gallo','id');
     }
 }

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GalloController;
-use App\Http\Controllers\Api\GalleraController;
+
 use App\Http\Controllers\Api\VacunaController;
 use App\Http\Controllers\Api\PeleaController;
 use App\Http\Controllers\Api\EntrenamientoController;
@@ -15,7 +15,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
-        'timestamp' => now()->toISOString(),
+        'timestamp' => now()->toIso8601String(),
     ]);
 });
 
@@ -25,9 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
-    // CRUD de Galleras
-    Route::apiResource('galleras', GalleraController::class);
-    Route::get('galleras/{gallera}/estadisticas', [GalleraController::class, 'estadisticas']);
 
     // CRUD de Gallos
     Route::apiResource('gallos', GalloController::class);
@@ -44,5 +41,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('entrenamientos', EntrenamientoController::class);
     Route::get('entrenamientos/gallo/{galloId}/resumen', [EntrenamientoController::class, 'resumenPorGallo']);
 });
-
-

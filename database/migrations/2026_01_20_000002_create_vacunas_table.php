@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vacunas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('gallo_id')->constrained('gallos')->onDelete('cascade');
+            $table->foreignId('id_gallo')->constrained('gallos')->onDelete('cascade');
             $table->string('nombre_vacuna', 100);
             $table->date('fecha_aplicacion');
             $table->string('dosis', 50);
