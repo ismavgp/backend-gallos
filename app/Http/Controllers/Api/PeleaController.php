@@ -68,7 +68,7 @@ class PeleaController extends Controller
             'id_gallo' => 'required|exists:gallos,id',
             'fecha' => 'required|date',
             'lugar' => 'required|string|max:255',
-            'estado' => ['required', Rule::in(['Ganada', 'Perdida', 'Empatada'])],
+            'estado' => ['required', Rule::in(['Pendiente', 'Ganada', 'Perdida', 'Empatada'])],
         ]);
 
         $user = $request->user();
@@ -116,7 +116,7 @@ class PeleaController extends Controller
             'id_gallo' => 'sometimes|required|exists:gallos,id',
             'fecha' => 'sometimes|required|date',
             'lugar' => 'sometimes|required|string|max:255',
-            'estado' => ['nullable', Rule::in(['Ganada', 'Perdida', 'Empatada'])],
+            'estado' => ['nullable', Rule::in(['Pendiente', 'Ganada', 'Perdida', 'Empatada'])],
         ]);
 
         if (isset($validated['id_gallo'])) {
@@ -154,7 +154,7 @@ class PeleaController extends Controller
     public function actualizarResultado(Request $request, Pelea $pelea): PeleaResource
     {
         $validated = $request->validate([
-            'estado' => ['required', Rule::in(['Ganada', 'Perdida', 'Empatada'])],
+            'estado' => ['required', Rule::in(['Pendiente', 'Ganada', 'Perdida', 'Empatada'])],
         ]);
 
         $pelea->update($validated);

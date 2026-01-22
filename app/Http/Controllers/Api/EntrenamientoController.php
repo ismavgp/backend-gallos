@@ -72,8 +72,7 @@ class EntrenamientoController extends Controller
 
         $user = $request->user();
         $gallo = Gallo::find($validated['id_gallo']);
-
-        $gallo = Gallo::find($validated['id_gallo']);
+        
         if ($gallo->id_user !== $user->id) {
             abort(403, 'No tienes permiso para entrenar este gallo');
         }

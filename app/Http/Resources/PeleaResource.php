@@ -17,8 +17,7 @@ class PeleaResource extends JsonResource
         return [
             'id' => $this->id,
             'id_gallo' => $this->id_gallo,
-            'fecha' => $this->fecha?->toISOString(),
-            'fecha_formateada' => $this->fecha?->format('Y-m-d H:i'),
+            'fecha' => $this->fecha?->format('Y-m-d H:i:s'),
             'lugar' => $this->lugar,
             'estado' => $this->estado,
             

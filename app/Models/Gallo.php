@@ -80,7 +80,7 @@ class Gallo extends Model
      */
     public function vacunas(): HasMany
     {
-        return $this->hasMany(Vacuna::class);
+        return $this->hasMany(Vacuna::class, 'id_gallo');
     }
 
     /**
@@ -88,7 +88,7 @@ class Gallo extends Model
      */
     public function entrenamientos(): HasMany
     {
-        return $this->hasMany(Entrenamiento::class);
+        return $this->hasMany(Entrenamiento::class, 'id_gallo');
     }
 
     /**
@@ -96,6 +96,6 @@ class Gallo extends Model
      */
     public function peleas(): HasMany
     {
-        return $this->hasMany(Pelea::class);
+        return $this->hasMany(Pelea::class, 'id_gallo');
     }
 }

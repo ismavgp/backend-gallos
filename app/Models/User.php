@@ -51,5 +51,11 @@ class User extends Authenticatable
         ];
     }
 
-
+    /**
+     * Relación con gallos
+     */
+    public function gallos()
+    {
+        return $this->hasMany(Gallo::class, 'id_user');
+    }
 }
