@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name', 100);
             $table->char('sexo', 1);
             $table->date('fecha_nacimiento');
-            $table->string('url_imagen', 255)->nullable();
+            $table->string('url_imagen', 500)->nullable();
             $table->string('color', 50);
             $table->decimal('peso', 5, 2);
             $table->decimal('talla', 5, 2);
